@@ -1,0 +1,6 @@
+{
+    "name": "tree",
+    "version": "0.1.0",
+    "description": "a js tool to list files and directories in local file system running on node.",
+    "author": "__MrRaindrop__ <tekkahs@gmail.com>"
+}
