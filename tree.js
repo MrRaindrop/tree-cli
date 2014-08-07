@@ -4,9 +4,10 @@
  * 
  * usage: use it in node cmd - node tree
  * cmd line arguments:
- * --path/-p : root path.
+ * --path/-p: root path.
  * --out/-o: output file.
- * -r: recursive
+ * --recursive/-r: recursive.
+ * --verbose/-v: output result to cli.
  * 
  * //////////////////////////////////
  * 
@@ -14,6 +15,7 @@
  * pass config object to method run:
  * path: root path.
  * data: if not passing path, data obj must be passed.
+ * isVerbose: output result to cli.
  * isRecursive: show directory recursively or not.
  * level: how deep the recursion goes.
  * out: output file path.
@@ -27,21 +29,27 @@ var fs = require('fs'),
 	// use \ on windows and / on linux/unix/mac.
 	pathSeparator,
 	// use suffix on directory name to distingish from other files.
-	dirSuffix = '/';
+	dirSuffix = '/',
 
 	DEFAULT_LEVEL = 20,
+	// init configure. pass from cli arguments or parameter of run.
+	opts,
 
 	_readArgs = function(arguments, cb) {
+		console.log('_readArgs:', arguments, cb);
 		var keys = [
 				'--path',
 				'-p',
 				'--out',
 				'-o',
+				'--recursive',
 				'-r',
 				'--level',
-				'-l'
+				'-l',
+				'--verbose',
+				'-v'
 			],
-			args = {}, tmp, k, opts;
+			args = {}, tmp, k;
 		if (!arguments || !arguments.length) return;
 		for (var i = 0, l = arguments.length; i < l; i++) {
 			tmp = arguments[i].split('=');
@@ -53,15 +61,16 @@ var fs = require('fs'),
 		opts = {
 			path: args.path || args.p,
 			out: args.out || args.o,
-			isRecursive: args.hasOwnProperty('r'),
-			level: parseInt(args.level || args.l)	
+			isRecursive: args.hasOwnProperty('r') || args.hasOwnProperty('--recursive'),
+			level: parseInt(args.level || args.l),
+			isVerbose: args.hasOwnProperty('v') || args.hasOwnProperty('--verbose')
 		};
 		// new RegExp('\\' + pathSeparator + '$').test(opts.path) &&
 		// 	(opts.path = opts.path.substring(0, opts.path.length - 1));
-		cb(opts, _output);
+		cb(_output);
 	},
 
-	_run = function(opts) {
+	_run = function() {
 		if(/win/.test(os.platform().toLowerCase())) {
 			pathSeparator = '\\';
 		} else {
@@ -71,14 +80,14 @@ var fs = require('fs'),
 		else {
 			if (!opts.path && opts.data) {
 				dirSuffix = '';
-				_readObj(opts, _output);
+				_readObj(_output);
 			} else {
-				_readDir(opts, _output);
+				_readDir(_output);
 			}
 		}
 	},
 
-	_readDir = function(opts, cb) {
+	_readDir = function(cb) {
 
 		var i, l, j, m, file, cnt = 0,
 			dirQueue = [], nextDirQueue = [],
@@ -119,7 +128,7 @@ var fs = require('fs'),
 					// when finished scanning all the files and directories in dirQueue.
 					if (cnt === dirQueue.length) {
 						if (lvl === maxLvl || nextDirQueue.length === 0) {
-							return cb(dir, opts.out);
+							return cb(dir, opts);
 						} else {
 							lvl++;
 							cnt = 0;
@@ -133,7 +142,7 @@ var fs = require('fs'),
 
 				});
 			};
-
+		console.log(opts);
 		if (!opts.path) {
 			throw new Error('path must be configured.');
 		}
@@ -157,9 +166,9 @@ var fs = require('fs'),
 
 	},
 
-	_readObj = function(opts, cb) {
+	_readObj = function(cb) {
 		var dir = opts.data;
-		cb(dir, opts.out);
+		cb(dir);
 	},
 
 	_getLastKey = function(dir) {
@@ -172,10 +181,10 @@ var fs = require('fs'),
 		return lastKey;
 	},
 	
-	_output = function(dir, out) {
+	_output = function(dir) {
 		var str = '',
 			roots = [],
-			o = out || 'tree_cli_output.txt';
+			o = opts.out || 'tree_cli_output.txt';
 			draw = function(parent, prefix) {
 				var lk = _getLastKey(parent),
 					pref = prefix;
@@ -202,12 +211,14 @@ var fs = require('fs'),
 			str += '--' + roots[i] + os.EOL;
 			draw(dir[roots[i]], '');
 		}
+		if (opts.isVerbose) {
+			console.log('tree-cli output_tree:\n' + str);
+		}
 		fs.writeFile(o, str, function(err) {
 			if (err) throw err;
 			console.log('dir tree has been saved to ' + o);
 		});
 	};
-_run();
 
 module.exports = {
 
