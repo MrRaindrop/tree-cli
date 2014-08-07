@@ -14,13 +14,19 @@ cmd line arguments:
 > * ``--out``/``-o``: output file.
 > * ``-r``: recursive
 
+example:
+```
+node tree -p=D:\www -o=D:\tree_output.txt -r
+```
+
+------------------------
+
 api
 ----------
 
 #### run
 
 pass ``opts`` object to run:
-
 ```javascript
 var tree = require('tree'),
 	opts = {
