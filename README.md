@@ -1,4 +1,4 @@
-treejs
+tree-cli
 ======
 
 a js tool to list files and directories in local file system running on node.
@@ -28,7 +28,7 @@ api
 
 pass ``opts`` object to run:
 ```javascript
-var tree = require('tree'),
+var tree = require('tree-cli'),
 	opts = {
 		path: 'D:\www',
 		isRecursive: true,
