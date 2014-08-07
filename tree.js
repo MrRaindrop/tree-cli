@@ -195,9 +195,9 @@ var fs = require('fs'),
 			str += '--' + roots[i] + os.EOL;
 			draw(dir[roots[i]], '');
 		}
-		fs.writeFile(out, str, function(err) {
+		fs.writeFile(o, str, function(err) {
 			if (err) throw err;
-			console.log('dir tree has been saved to ' + out);
+			console.log('dir tree has been saved to ' + o);
 		});
 	};
 
