@@ -22,7 +22,12 @@ cmd line arguments:
 
 example:
 ```
-tree-cli -p=D:\www -o=D:\treecli_output.txt -r
+tree-cli -p=D:\www -o=D:\tree_cli_output.txt -r
+```
+
+in tree_cli_output.txt:
+```
+
 ```
 
 ------------------------
