@@ -20,6 +20,7 @@ cmd line arguments:
 > * ``--out``/``-o``: output file.
 > * ``--recursive``/``-r``: dump recursively.
 > * ``--verbose``/``-v``: dump verbosely.
+> * ``--level``/``-l`` : how deep the recursion goes.
 
 example:
 ```
