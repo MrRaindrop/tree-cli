@@ -36,7 +36,6 @@ var fs = require('fs'),
 	opts,
 
 	_readArgs = function(arguments, cb) {
-		console.log('_readArgs:', arguments, cb);
 		var keys = [
 				'--path',
 				'-p',
@@ -142,7 +141,6 @@ var fs = require('fs'),
 
 				});
 			};
-		console.log(opts);
 		if (!opts.path) {
 			throw new Error('path must be configured.');
 		}
