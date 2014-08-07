@@ -82,7 +82,7 @@ var fs = require('fs'),
 
 		var i, l, j, m, file, cnt = 0,
 			dirQueue = [], nextDirQueue = [],
-			lvl = 1, maxLvl, dir = {}, root;
+			lvl = 1, maxLvl, dir = {}, root, rootName, idx;
 
 			readNextDir = function(path, parent, cb) {
 
@@ -137,7 +137,16 @@ var fs = require('fs'),
 		if (!opts.path) {
 			throw new Error('path must be configured.');
 		}
-		root = dir[opts.path.slice(0, opts.path.lastIndexOf(pathSeparator))] = {};
+		if (opts.path[opts.length - 1] === pathSeparator) {
+			rootName = substring(0, opts.length - 1);
+		} else {
+			rootName = opts.path;
+		}
+		idx = rootName.lastIndexOf(pathSeparator);
+		if (~idx) {
+			rootName = rootName.substr(idx + 1);
+		}
+		root = dir[rootName] = {};
 		if (opts.isRecursive) {
 			maxLvl = opts.level || DEFAULT_LEVEL;
 		} else {
@@ -171,7 +180,6 @@ var fs = require('fs'),
 				var lk = _getLastKey(parent),
 					pref = prefix;
 				for (var k in parent) {
-					// console.log('str', str);
 					if (parent.hasOwnProperty(k)) {
 						str += pref + '  |--' + k +
 							// if parent[k] has childs, append dirSuffix to it's name.
@@ -185,7 +193,6 @@ var fs = require('fs'),
 					}
 				}
 			};
-
 		for (var k in dir) {
 			if (dir.hasOwnProperty(k)) {
 				roots.push(k);
@@ -200,6 +207,7 @@ var fs = require('fs'),
 			console.log('dir tree has been saved to ' + o);
 		});
 	};
+_run();
 
 module.exports = {
 
