@@ -3,7 +3,7 @@ treejs
 
 a js tool to listing files and directories in local file system running on node.
 
-usage
+cmd
 ----------
 
 use it in node cmd - ``node tree``
@@ -19,10 +19,10 @@ api
 
 * run
 
-	arguments:
-	``path``: root path.
-	``data``: if not passing path, data obj must be passed.
-	``isRecursive``: show directory recursively or not.
-	``level``: how deep the recursion goes.
-	``out``: output file path.
+arguments:
+ * ``path``: root path.
+ * ``data``: if not passing path, data obj must be passed.
+ * ``isRecursive``: show directory recursively or not.
+ * ``level``: how deep the recursion goes.
+ * ``out``: output file path.
 
