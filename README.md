@@ -3,10 +3,16 @@ tree-cli
 
 a js tool to list files and directories in local file system running on node.
 
+install
+----------
+```
+node install -g tree-cli
+```
+
 cmd
 ----------
 
-use it in node cmd - ``node tree``
+use it in node cmd: ``tree-cli``
 
 cmd line arguments:
 
@@ -16,7 +22,7 @@ cmd line arguments:
 
 example:
 ```
-node tree -p=D:\www -o=D:\tree_output.txt -r
+tree-cli -p=D:\www -o=D:\treecli_output.txt -r
 ```
 
 ------------------------
