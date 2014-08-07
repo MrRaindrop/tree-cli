@@ -1,7 +1,7 @@
 treejs
 ======
 
-a js tool to listing files and directories in local file system running on node.
+a js tool to list files and directories in local file system running on node.
 
 cmd
 ----------
