@@ -166,7 +166,7 @@ var fs = require('fs'),
 	_output = function(dir, out) {
 		var str = '',
 			roots = [],
-			o = out || 'treejs_output.txt';
+			o = out || 'tree_cli_output.txt';
 			draw = function(parent, prefix) {
 				var lk = _getLastKey(parent),
 					pref = prefix;
@@ -201,31 +201,8 @@ var fs = require('fs'),
 		});
 	};
 
-_run();
-
-// test
-// _run({
-// 	// path: 'D:\\',
-// 	isRecursive: true,
-// 	level: 3,
-// 	out: 'D:\\treejs_output.txt',
-// 	data: {
-// 		a: {
-// 			b: '/',
-// 			c: '/',
-// 			d: {
-// 				f: '',
-// 				d: ''
-// 			}
-// 		},
-// 		e: {
-// 			test: ''
-// 		}
-// 	}
-// });
-
 module.exports = {
 
-	run: _run,
+	run: _run
 
 };
