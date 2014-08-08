@@ -6,7 +6,7 @@ a js tool to list files and directories in local file system running on node.
 install
 ----------
 ```
-node install -g tree-cli
+npm install -g tree-cli
 ```
 
 cmd
@@ -20,6 +20,7 @@ cmd line arguments:
 > * ``--out``/``-o``: output file.
 > * ``--recursive``/``-r``: dump recursively.
 > * ``--verbose``/``-v``: dump verbosely.
+> * ``--level``/``-l`` : how deep the recursion goes.
 
 example:
 ```
