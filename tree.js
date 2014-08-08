@@ -25,6 +25,7 @@
 var fs = require('fs'),
 	util = require('util'),
 	os = require('os'),
+	path = require('path'),
 
 	// use \ on windows and / on linux/unix/mac.
 	pathSeparator,
@@ -69,7 +70,7 @@ var fs = require('fs'),
 		cb(_output);
 	},
 
-	_run = function() {
+	_run = function(opts) {
 		if(/win/.test(os.platform().toLowerCase())) {
 			pathSeparator = '\\';
 		} else {
@@ -141,11 +142,14 @@ var fs = require('fs'),
 
 				});
 			};
-		if (!opts.path) {
-			throw new Error('path must be configured.');
+
+		if (opts.path) {
+			opts.path = path.resolve(__dirname, opts.path);
+		} else if (!opts.data) {
+			opts.path = __dirname;
 		}
-		if (opts.path[opts.length - 1] === pathSeparator) {
-			rootName = substring(0, opts.length - 1);
+		if (opts.path[opts.path.length - 1] === pathSeparator) {
+			rootName = opts.path.substring(0, opts.path.length - 1);
 		} else {
 			rootName = opts.path;
 		}
@@ -169,14 +173,24 @@ var fs = require('fs'),
 		cb(dir);
 	},
 
-	_getLastKey = function(dir) {
-		var lastKey = null;
+	_getKeys = function(dir) {
+		var keys = [];
 		for (var k in dir) {
 			if (dir.hasOwnProperty(k)) {
-				lastKey = k;
+				keys.push(k);
 			}
 		}
-		return lastKey;
+		return keys;
+	},
+
+	_getKeysLength = function(dir) {
+		var cnt = 0;
+		for (var k in dir) {
+			if (dir.hasOwnProperty(k)) {
+				cnt++;
+			}
+		}
+		return cnt;
 	},
 	
 	_output = function(dir) {
@@ -184,15 +198,17 @@ var fs = require('fs'),
 			roots = [],
 			o = opts.out || 'tree_cli_output.txt';
 			draw = function(parent, prefix) {
-				var lk = _getLastKey(parent),
-					pref = prefix;
+				var len = _getKeysLength(parent),
+					pref = prefix,
+					cnt = 0;
 				for (var k in parent) {
 					if (parent.hasOwnProperty(k)) {
+						cnt++;
 						str += pref + '  |--' + k +
 							// if parent[k] has childs, append dirSuffix to it's name.
 							(parent[k] !== '' ? dirSuffix : '') +
 							os.EOL;
-						if (typeof parent[k] === 'object' && lk === k) {
+						if (typeof parent[k] === 'object' && cnt === len) {
 							draw(parent[k], pref + '   ');
 						} else if (typeof parent[k] === 'object') {
 							draw(parent[k], pref + '  |');
@@ -217,6 +233,8 @@ var fs = require('fs'),
 			console.log('dir tree has been saved to ' + o);
 		});
 	};
+
+	_run();
 
 module.exports = {
 
