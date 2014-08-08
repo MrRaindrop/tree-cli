@@ -145,7 +145,7 @@ var fs = require('fs'),
 
 		if (opts.path) {
 			opts.path = path.resolve(__dirname, opts.path);
-		} else if (!opts.data) {
+		} else {
 			opts.path = __dirname;
 		}
 		if (opts.path[opts.path.length - 1] === pathSeparator) {
