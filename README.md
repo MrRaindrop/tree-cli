@@ -12,7 +12,7 @@ npm install -g tree-cli
 cmd
 ----------
 
-use it in node cmd: ``tree-cli``
+use it in node cmd: ``tree``
 
 cmd line arguments:
 
