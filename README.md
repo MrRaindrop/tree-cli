@@ -24,7 +24,7 @@ cmd line arguments:
 
 example:
 ```
-tree-cli -p=D:\Atree -o=D:\tree_cli_output.txt -r
+tree -p=D:\Atree -o=D:\tree_cli_output.txt -r
 ```
 
 in tree_cli_output.txt:
