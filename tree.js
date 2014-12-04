@@ -3,85 +3,102 @@
  * //////////////////////////////////
  * 
  * usage: use it in node cmd - node tree
- * cmd line arguments:
- * --path/-p: root path.
- * --out/-o: output file.
- * --recursive/-r: recursive.
- * --verbose/-v: output result to cli.
- * 
- * //////////////////////////////////
- * 
- * or use run api:
- * pass config object to method run:
- * path: root path.
- * data: if not passing path, data obj must be passed.
- * isVerbose: output result to cli.
- * isRecursive: show directory recursively or not.
- * level: how deep the recursion goes.
- * out: output file path.
  * 
  */
 
 var fs = require('fs'),
 	util = require('util'),
 	os = require('os'),
+	prompt = require('prompt'),
 
 	// use \ on windows and / on linux/unix/mac.
 	pathSeparator,
 	// use suffix on directory name to distingish from other files.
 	dirSuffix = '/',
 
-	DEFAULT_LEVEL = 20,
-	// init configure. pass from cli arguments or parameter of run.
+	DEFAULT_LEVEL = 1,
+	DEFAULT_INDENTATION = 2,
+
+	// init configure. pass from prompt arguments or parameter of run.
 	opts,
 
-	_readArgs = function(arguments, cb) {
-		var keys = [
-				'--path',
-				'-p',
-				'--out',
-				'-o',
-				'--recursive',
-				'-r',
-				'--level',
-				'-l',
-				'--verbose',
-				'-v'
-			],
-			args = {}, tmp, k;
-		if (!arguments || !arguments.length) return;
-		for (var i = 0, l = arguments.length; i < l; i++) {
-			tmp = arguments[i].split('=');
-			if (!~keys.indexOf((k = tmp[0]))) {
-				throw new Error('cmd arguments error with ' + k);
+	_readArgs = function(cb) {
+		var promptSchema = {
+			properties: {
+				path: {
+					description: 'path of the target directory',
+					require: true
+				},
+				out: {
+					description: 'path of the output txt file',
+					require: true
+				},
+				level: {
+					description: 'maximum recursion depth: (default: 1)',
+					pattern: /^[1-9][0-9]*$/,
+					require: true
+				},
+				indentation: {
+					description: 'indentation: (integer number, default: 2)',
+					pattern: /^[1-9][0-9]*$/,
+					require: true
+				},
+				isVerbose: {
+					description: 'Show results in console? N[Y]',
+					pattern: /^(y|n)$/i,
+					require: true
+				}
 			}
-			args[k.replace(/[-]+/, '')] = tmp[1];
-		}
-		opts = {
-			path: args.path || args.p,
-			out: args.out || args.o,
-			isRecursive: args.hasOwnProperty('r') || args.hasOwnProperty('--recursive'),
-			level: parseInt(args.level || args.l),
-			isVerbose: args.hasOwnProperty('v') || args.hasOwnProperty('--verbose')
 		};
-		// new RegExp('\\' + pathSeparator + '$').test(opts.path) &&
-		// 	(opts.path = opts.path.substring(0, opts.path.length - 1));
-		cb(_output);
+		prompt.start();
+		prompt.get(promptSchema, function(err, res) {
+			if (err) {
+				console.log(err);
+			} else {
+				opts = {
+					path: res.path,
+					out: res.out,
+					level: ~~res.level || DEFAULT_LEVEL,
+					indentation: ~~res.indentation || DEFAULT_INDENTATION,
+					isVerbose: (res.isVerbose === 'y' || res.isVerbose === 'Y')
+				};
+
+				fs.readdir(res.path, function(err, files) {
+					if (err) {
+						console.log('[error]:invalid path: ', res.path);
+						_readArgs(cb);
+					} else {
+						cb(_output);
+					}
+				});
+
+			}
+		});
 	},
 
-	_run = function() {
+	_run = function(config) {
 		if(/win/.test(os.platform().toLowerCase())) {
 			pathSeparator = '\\';
 		} else {
 			pathSeparator = '\/';
-		}; 
-		if (!opts) _readArgs(process.argv.slice(2), _readDir);
+		};
+
+		if (!config) _readArgs(_readDir);
+
 		else {
+			opts = config;
 			if (!opts.path && opts.data) {
 				dirSuffix = '';
 				_readObj(_output);
 			} else {
-				_readDir(_output);
+				// validate the directory by trying to read it.
+				fs.readdir(opts.path, function(err, files) {
+					if (err) {
+						throw new Error('invalid path: ', res.path, err); alert(1);
+					} else {
+						_readDir(_output);
+					}
+				});
 			}
 		}
 	},
@@ -102,16 +119,24 @@ var fs = require('fs'),
 					cnt++;
 
 					if (err) {
-						console.log(err);
-						throw new Error('read dir error.');
+						console.log('[error]invalid path: ', path);
+						return;
 					}
 
 					for (i = 0, l = files.length; i < l; i++) {
 						file = files[i];
-						if (/^\$/.test(file)) {
+
+						// if (/^\$/.test(file)) {
+						// 	continue;
+						// }
+
+						try {
+							stats = fs.statSync(p + file);
+						} catch (e) {
+							console.log(e);
 							continue;
 						}
-						stats = fs.statSync(p + file);
+						
 						if (stats.isDirectory()) {
 							if (lvl !== maxLvl) {
 								parent[file] = {};
@@ -148,17 +173,15 @@ var fs = require('fs'),
 			rootName = substring(0, opts.length - 1);
 		} else {
 			rootName = opts.path;
+			opts.path += pathSeparator;
 		}
 		idx = rootName.lastIndexOf(pathSeparator);
 		if (~idx) {
 			rootName = rootName.substr(idx + 1);
 		}
 		root = dir[rootName] = {};
-		if (opts.isRecursive) {
-			maxLvl = opts.level || DEFAULT_LEVEL;
-		} else {
-			maxLvl = 1;
-		}
+		maxLvl = opts.level;
+
 		dirQueue.push({ name: opts.path, path: opts.path });
 		readNextDir(opts.path, root, cb);
 
@@ -166,6 +189,8 @@ var fs = require('fs'),
 
 	_readObj = function(cb) {
 		var dir = opts.data;
+		opts.level = ~~opts.level || DEFAULT_LEVEL;
+		opts.indentation = ~~opts.indentation || DEFAULT_INDENTATION;
 		cb(dir);
 	},
 
@@ -180,22 +205,38 @@ var fs = require('fs'),
 	},
 	
 	_output = function(dir) {
+		console.log('dir', dir);
 		var str = '',
 			roots = [],
 			o = opts.out || 'tree_cli_output.txt';
 			draw = function(parent, prefix) {
 				var lk = _getLastKey(parent),
+					tb = '', tl = '',
+					line,
+					lineA = '├',
+					lineB = '└',
 					pref = prefix;
+				for (var i = 0; i < opts.indentation; i++) {
+					tb += ' ';
+					tl += '─';
+				}
+				lineA = tb + lineA + tl + '';
+				lineB = tb + lineB + tl + '';
 				for (var k in parent) {
 					if (parent.hasOwnProperty(k)) {
-						str += pref + '  |--' + k +
+						if (lk === k) {
+							line = lineB;
+						} else {
+							line = lineA;
+						}
+						str += pref + line + k +
 							// if parent[k] has childs, append dirSuffix to it's name.
 							(parent[k] !== '' ? dirSuffix : '') +
 							os.EOL;
 						if (typeof parent[k] === 'object' && lk === k) {
-							draw(parent[k], pref + '   ');
+							draw(parent[k], pref + new Array(opts.indentation + 1).join(' ') + '  ');
 						} else if (typeof parent[k] === 'object') {
-							draw(parent[k], pref + '  |');
+							draw(parent[k], pref + new Array(opts.indentation + 1).join(' ') + '│');
 						}
 					}
 				}
@@ -206,7 +247,7 @@ var fs = require('fs'),
 			}
 		}
 		for (var i = 0, l = roots.length; i < l; i++) {
-			str += '--' + roots[i] + os.EOL;
+			str += new Array(opts.indentation + 1).join('─') + roots[i] + os.EOL;
 			draw(dir[roots[i]], '');
 		}
 		if (opts.isVerbose) {
@@ -223,3 +264,17 @@ module.exports = {
 	run: _run
 
 };
+
+_run({
+	data: {
+	  foo: {
+	    foo: '',
+	  },
+	  bar: {
+	    bar1: '',
+	    bar2: '',
+	  }
+	},
+    level: 2,
+    indentation: 1
+});
