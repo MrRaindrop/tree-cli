@@ -264,17 +264,3 @@ module.exports = {
 	run: _run
 
 };
-
-_run({
-	data: {
-	  foo: {
-	    foo: '',
-	  },
-	  bar: {
-	    bar1: '',
-	    bar2: '',
-	  }
-	},
-    level: 2,
-    indentation: 1
-});
