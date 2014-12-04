@@ -166,11 +166,14 @@ var fs = require('fs'),
 
 				});
 			};
-		if (!opts.path) {
-			throw new Error('path must be configured.');
+
+		if (opts.path) {
+			opts.path = path.resolve(__dirname, opts.path);
+		} else {
+			opts.path = __dirname;
 		}
-		if (opts.path[opts.length - 1] === pathSeparator) {
-			rootName = substring(0, opts.length - 1);
+		if (opts.path[opts.path.length - 1] === pathSeparator) {
+			rootName = opts.path.substring(0, opts.path.length - 1);
 		} else {
 			rootName = opts.path;
 			opts.path += pathSeparator;
@@ -194,14 +197,24 @@ var fs = require('fs'),
 		cb(dir);
 	},
 
-	_getLastKey = function(dir) {
-		var lastKey = null;
+	_getKeys = function(dir) {
+		var keys = [];
 		for (var k in dir) {
 			if (dir.hasOwnProperty(k)) {
-				lastKey = k;
+				keys.push(k);
 			}
 		}
-		return lastKey;
+		return keys;
+	},
+
+	_getKeysLength = function(dir) {
+		var cnt = 0;
+		for (var k in dir) {
+			if (dir.hasOwnProperty(k)) {
+				cnt++;
+			}
+		}
+		return cnt;
 	},
 	
 	_output = function(dir) {
@@ -258,6 +271,8 @@ var fs = require('fs'),
 			console.log('dir tree has been saved to ' + o);
 		});
 	};
+
+	_run();
 
 module.exports = {
 
