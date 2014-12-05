@@ -272,8 +272,6 @@ var fs = require('fs'),
 		});
 	};
 
-	_run();
-
 module.exports = {
 
 	run: _run
