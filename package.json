@@ -1,6 +1,6 @@
 {
     "name": "tree-cli",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "a js tool to list files and directories in local file system running on node.",
     "author": {
 		"name": "mr.raindrop",
@@ -11,7 +11,9 @@
 		"type": "git",
 		"url" : "https://github.com/MrRaindrop/tree-cli.git"
 	}, 
-	"bin": "./bin/tree",
+	"bin": {
+    "tree": "./bin/tree"
+  },
 	"dependencies": {
 		"prompt": "*"
 	}
