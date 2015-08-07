@@ -68,6 +68,7 @@ directory: 9 file: 6
 * --version: outputs the version of tree-cli.
 * --debug: show debug info.
 * --fullpath: prints the full path prefix for each file.
+* --link: follows symbolic links if they point to directories, as if they were directories. Symbolic links that will result in recursion are avoided when detected.
 * --noreport: omits printing of the file and directory report at the end of the tree listing and omits printing the tree on console.
 * -a: all files are printed. By default tree does not print hidden files (those beginning with a dot '.'). In no event does tree print the file system constructs '.' (current directory) and '..' (previous directory).
 * -d: list directories only.
