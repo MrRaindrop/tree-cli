@@ -1,20 +1,26 @@
 {
-    "name": "tree-cli",
-    "version": "0.2.2",
-    "description": "a js tool to list files and directories in local file system running on node.",
-    "author": {
-		"name": "mr.raindrop",
-		"email": "tekkahs@gmail.com",
-		"url": "http://mrraindrop.com/"
-	},
-	"repository": {
-		"type": "git",
-		"url" : "https://github.com/MrRaindrop/tree-cli.git"
-	}, 
-	"bin": {
+  "name": "tree-cli",
+  "version": "0.3.0",
+  "description": "a js tool to list files and directories in local file system running on node.",
+  "author": {
+    "name": "mr.raindrop",
+    "email": "tekkahs@gmail.com",
+    "url": "http://mrraindrop.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrRaindrop/tree-cli.git"
+  },
+  "bin": {
     "tree": "./bin/tree"
   },
-	"dependencies": {
-		"prompt": "*"
-	}
+  "dependencies": {
+    "bluebird": "^2.9.34",
+    "chalk": "^1.1.0",
+    "cli-spinner": "^0.2.1",
+    "inquirer": "^0.9.0",
+    "meow": "^3.3.0",
+    "object-assign": "^3.0.0",
+    "prompt": "*"
+  }
 }
