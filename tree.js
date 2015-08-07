@@ -22,7 +22,6 @@ var Promise = require('bluebird'),
 	_root,
 	_spinner = new Spinner(),
 
-	// init configure. pass from prompt arguments or parameter of run.
 	_flags = {
 		// --debug
 		// show debug info.
