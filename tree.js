@@ -261,9 +261,9 @@ var Promise = require('bluebird'),
 								level: parent.level + 1,
 								name: file,
 								path: filePath,
-								lasts: parent.lasts || []
+								lasts: parent.lasts ? parent.lasts.slice() : []
 							};
-							(index === files.length - 1) && (child.lasts[parent.level] = true)
+							(index === files.length - 1) && (child.lasts[parent.level] = true);
 							parent.children.push(child);
 							// for statistics.
 							_stats.all.push(child);
@@ -309,10 +309,18 @@ var Promise = require('bluebird'),
 
 		var children = node.children, lastChild,
 			str = '';
+			// allLast = function(i) {
+			// 	//// TODO
+			// 	var al = true;
+			// 	for (var j = 0; j <= i; j++) {
+			// 		!node.lasts[j] && (al = false);
+			// 	}
+			// 	return al;
+			// };
 		if (node.type === 'symboliclink' && !_flags.link) {
 			return '';
 		}
-		for (i = 0; i < node.level - 1; i++) {
+		for (var i = 0; i < node.level - 1; i++) {
 			str += (node.lasts[i] ? _marks.pre_blank : _marks.pre_vert);
 		}
 		if (last) {
