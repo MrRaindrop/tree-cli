@@ -253,7 +253,6 @@ var Promise = require('bluebird'),
 				parent.children = [];
 				return Promise.resolve(files)
 					.each(function(file, index) {
-						console.log(index);
 						var filePath = path.resolve(parent.path, file);
 						return getFileType(filePath).then(function(type) {
 							_debug(type, filePath);
