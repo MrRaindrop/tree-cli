@@ -56,7 +56,7 @@ var cli = meow({
         '',
         'EXAMPLE:',
         '',
-        '$ tree'
+        '$ tree',
         '',
         '$ tree -l 2, -o out.txt -d --noreport'
     ]
