@@ -42,24 +42,14 @@ tree -l 2 -o out.txt
 result:
 
 ```
-/Applications/XAMPP/htdocs/node_playground/tree-cli
+/Users/rdp/node_playground/tree-cli
 |-- README.md
 |-- bin
-|  `-- tree
-|-- cli
 |-- node_modules
-|  |-- bluebird
-|  |-- chalk
-|  |-- cli-spinner
-|  |-- inquirer
-|  |-- meow
-|  |-- object-assign
-|  `-- prompt
 |-- package.json
-|-- tree.js
-`-- tree_out
+`-- tree.js
 
-directory: 9 file: 6
+directory: 2 file: 3 
 ```
 
 ## Options
