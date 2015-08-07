@@ -1,279 +1,366 @@
-/**
- * 
- * //////////////////////////////////
- * 
- * usage: use it in node cmd - node tree
- * 
- */
+'use strict';
 
-var fs = require('fs'),
+var _DEBUG = false;
+
+var Promise = require('bluebird'),
+	assign = require('object-assign'),
+	chalk = require('chalk'),
+	Spinner = require('cli-spinner').Spinner,
+	// inquirer = require('inquirer'),
+
+	fs = Promise.promisifyAll(require('fs')),
 	util = require('util'),
 	os = require('os'),
-	prompt = require('prompt'),
-
-	// use \ on windows and / on linux/unix/mac.
-	pathSeparator,
-	// use suffix on directory name to distingish from other files.
-	dirSuffix = '/',
+	path = require('path'),
+	childProcess = require('child_process'),
 
 	DEFAULT_LEVEL = 1,
-	DEFAULT_INDENTATION = 2,
+	DEFAULT_INDENT = 2,
+
+	_LOG_DEBUG = '[debug]',
+	_LOG = chalk.bold.green('[log]'),
+	_ERROR = chalk.bold.red('[error]'),
+
+	_root,
+	_spinner = new Spinner(),
 
 	// init configure. pass from prompt arguments or parameter of run.
-	opts,
-
-	_readArgs = function(cb) {
-		var promptSchema = {
-			properties: {
-				path: {
-					description: 'path of the target directory',
-					require: true
-				},
-				out: {
-					description: 'path of the output txt file',
-					require: true
-				},
-				level: {
-					description: 'maximum recursion depth: (default: 1)',
-					pattern: /^[1-9][0-9]*$/,
-					require: true
-				},
-				indentation: {
-					description: 'indentation: (integer number, default: 2)',
-					pattern: /^[1-9][0-9]*$/,
-					require: true
-				},
-				isVerbose: {
-					description: 'Show results in console? N[Y]',
-					pattern: /^(y|n)$/i,
-					require: true
-				}
-			}
-		};
-		prompt.start();
-		prompt.get(promptSchema, function(err, res) {
-			if (err) {
-				console.log(err);
-			} else {
-				opts = {
-					path: res.path,
-					out: res.out,
-					level: ~~res.level || DEFAULT_LEVEL,
-					indentation: ~~res.indentation || DEFAULT_INDENTATION,
-					isVerbose: (res.isVerbose === 'y' || res.isVerbose === 'Y')
-				};
-
-				fs.readdir(res.path, function(err, files) {
-					if (err) {
-						console.log('[error]:invalid path: ', res.path);
-						_readArgs(cb);
-					} else {
-						cb(_output);
-					}
-				});
-
-			}
-		});
+	_flags = {
+		// --debug
+		// show debug info.
+		debug: _DEBUG,
+		base: '.',
+		indent: DEFAULT_INDENT,
+		// --fullpath
+		// prints the full path prefix for each file.
+		fullpath: false,
+		// --noreport
+		// omits printing of the file and directory report at the end of
+		// the tree listing and omits printing the tree on console.
+		noreport: false,
+		// -l
+		// max display depth of the directory tree.
+		l: DEFAULT_LEVEL,
+		o: 'tree_out',
+		// -f
+		// append a '/' for directories, a '=' for socket files
+    // and a '|' for FIFOs
+		f: false,
 	},
 
-	_run = function(config) {
-		if(/win/.test(os.platform().toLowerCase())) {
-			pathSeparator = '\\';
-		} else {
-			pathSeparator = '\/';
-		};
+	_tree = {
+	},
 
-		if (!config) _readArgs(_readDir);
+	_stats = {
+		all: [],
+		file: [],
+		directory: [],
+		blockdevice: [],
+		characterdevice: [],
+		symboliclink: [],
+		fifo: [],
+		socket: []
+	},
 
-		else {
-			opts = config;
-			if (!opts.path && opts.data) {
-				dirSuffix = '';
-				_readObj(_output);
-			} else {
-				// validate the directory by trying to read it.
-				fs.readdir(opts.path, function(err, files) {
-					if (err) {
-						throw new Error('invalid path: ', res.path, err); alert(1);
-					} else {
-						_readDir(_output);
-					}
-				});
-			}
+	_types = [
+		'directory',
+		'file',
+		'blockdevice',
+		'characterdevice',
+		'symboliclink',
+		'fifo',
+		'socket',
+	],
+
+	_marks,
+
+	// backup marks: ├── └──
+
+	_genMarks = function() {
+		_marks = {
+			vert: '|',
+			hori: '-',
+			eol: os.EOL,
+			pre_blank: _flags.i ?
+				'' :
+				'|' + new Array(_flags.indent + 1).join(' '),
+			pre_file: _flags.i ?
+				'' :
+				'|' + new Array(_flags.indent + 1).join('-'),
+			last_file: _flags.i ?
+				'' :
+				'`' + new Array(_flags.indent + 1).join('-'),
+			pre_directory: _flags.f ? '/' : '',
+			pre_blockdevice: '',
+			pre_characterdevice: '',
+			pre_symboliclink: '>',
+			pre_socket: _flags.f ? '=' : '',
+			pre_fifo: _flags.f ? '|' : ''
 		}
 	},
 
-	_readDir = function(cb) {
+	_spinnerOn = function() {
+		_spinner.setSpinnerString(9);
+		_spinner.start();
+	},
 
-		var i, l, j, m, file, cnt = 0,
-			dirQueue = [], nextDirQueue = [],
-			lvl = 1, maxLvl, dir = {}, root, rootName, idx;
+	_spinnerOff = function() {
+		_spinner.stop(true);
+	},
 
-			readNextDir = function(path, parent, cb) {
+	_debug = function() {
+		if (_flags.debug) {
+			console.log.apply(this,
+				[_LOG_DEBUG].concat(Array.prototype.slice.call(arguments)));
+		}
+	},
 
-				fs.readdir(path, function(err, files) {
+	_log = function() {
+		console.error.apply(this,
+			[_LOG].concat(Array.prototype.slice.call(arguments)));
+	},
 
-					var p = path + pathSeparator,
-						stats;
+	_error = function() {
+		console.error.apply(this,
+			[_ERROR].concat(Array.prototype.slice.call(arguments)));
+	},
 
-					cnt++;
+	exec = function(cmd) {
+		return Promise.promisify(childProcess.exec)(cmd)
+			.then(function(res) {
+				_debug('exec: ', cmd);
+				_debug('exec res: ', res);
+				return res;
+			}).catch(function(err) {
+				_error(err);
+				process.exit(-1);
+			});
+	},
 
-					if (err) {
-						console.log('[error]invalid path: ', path);
-						return;
+	init = function(flags) {
+
+		assign(_flags, flags);
+		if (_flags.l < DEFAULT_LEVEL) {
+			_flags.l = DEFAULT_LEVEL;
+		}
+		_log('flags', _flags);
+		_genMarks();
+
+		_spinnerOn();
+		return getRoot();
+
+	},
+
+	getRoot = function() {
+
+		if (_root) {
+			return Promise.resolve(_root);
+		} else {
+			return exec('pwd').then(function(res) {
+				_root = res[0].split('\n')[0];
+				_debug('__dirname:', __dirname);
+				_debug('root:', _root);
+				return _root;
+			});
+		}
+
+	},
+
+	getFileType = function(path) {
+
+		return fs.lstatAsync(path)
+			.then(function(stats) {
+				var types = [
+					'Directory',
+					'File',
+					'BlockDevice',
+					'CharacterDevice',
+					'SymbolicLink',
+					'FIFO',
+					'Socket',
+				], type;
+				for (var i = 0, l = types.length; i < l; i++) {
+					type = types[i];
+					if (stats['is' + type]()) {
+						_debug(type, path);
+						return type.toLowerCase();
 					}
+				}
+			})
+			.catch(function(err) {
+				_error(err);
+				process.exit(-1);
+			});
 
-					for (i = 0, l = files.length; i < l; i++) {
-						file = files[i];
+	},
 
-						// if (/^\$/.test(file)) {
-						// 	continue;
-						// }
+	isDirectory = function(path) {
 
-						try {
-							stats = fs.statSync(p + file);
-						} catch (e) {
-							console.log(e);
-							continue;
+		return fs.lstatAsync(path)
+			.then(function(stats) {
+				return stats.isDirectory();
+			})
+			.catch(function(err) {
+				_error(err);
+				process.exit(-1);
+			});
+
+	},
+
+	appendChildNodes = function(parent) {
+
+		_debug('appendTreeNode:', parent);
+		if (parent.level >= _flags.l) {
+			return;
+		}
+		if (!parent.path) {
+			_error('Path must exists:', parent);
+			process.exit(-1);
+		}
+		if (parent.type !== 'directory') {
+			_error('Must be a directory:', parent);
+			process.exit(-1);
+		}
+		parent.children = [];
+		return fs.readdirAsync(parent.path)
+			.then(function(files) {
+				return Promise.resolve(files)
+					.each(function(file) {
+						var filePath = path.resolve(parent.path, file),
+							ignoreReg = /^\./;
+						if (!_flags.a && ignoreReg.test(file)) {
+							return;
 						}
-						
-						if (stats.isDirectory()) {
-							if (lvl !== maxLvl) {
-								parent[file] = {};
-								nextDirQueue.push({ name: file, path: p + file, parent: parent[file] });
-							} else {
-								parent[file] = '/';
+						return getFileType(filePath).then(function(type) {
+							_debug(type, filePath);
+							var child = {
+								type: type,
+								level: parent.level + 1,
+								name: file,
+								path: filePath
+							};
+							parent.children.push(child);
+							// for statistics.
+							_stats.all.push(child);
+							_stats[type].push(child);
+							if (type === 'directory') {
+								return appendChildNodes(child);
 							}
-						} else {
-							parent[file] = '';
-						}
-					}
+						})
+					});
+			})
+			.catch(function(err) {
+				_error(err);
+				process.exit(-1);
+			});;
+		
+	},
 
-					// when finished scanning all the files and directories in dirQueue.
-					if (cnt === dirQueue.length) {
-						if (lvl === maxLvl || nextDirQueue.length === 0) {
-							return cb(dir, opts);
-						} else {
-							lvl++;
-							cnt = 0;
-							dirQueue = nextDirQueue.slice();
-							nextDirQueue = [];
-							for (j = 0, m = dirQueue.length; j < m; j++) {
-								readNextDir(dirQueue[j].path, dirQueue[j].parent, cb);
-							}
-						}
-					}
+	genTree = function(rootPath) {
 
-				});
+		_debug('- genTree started...');
+		
+		// rootPath must be a direcotry.
+		return isDirectory(rootPath).then(function(yes) {
+			if (!yes) {
+				console.error('Root path must be a direcotry:', rootPath);
+				process.exit(-1);
+			}
+			_tree.root = {
+				type: 'directory',
+				level: 0,
+				name: path.basename(rootPath),
+				path: rootPath
 			};
-
-		if (opts.path) {
-			opts.path = path.resolve(__dirname, opts.path);
-		} else {
-			opts.path = __dirname;
-		}
-		if (opts.path[opts.path.length - 1] === pathSeparator) {
-			rootName = opts.path.substring(0, opts.path.length - 1);
-		} else {
-			rootName = opts.path;
-			opts.path += pathSeparator;
-		}
-		idx = rootName.lastIndexOf(pathSeparator);
-		if (~idx) {
-			rootName = rootName.substr(idx + 1);
-		}
-		root = dir[rootName] = {};
-		maxLvl = opts.level;
-
-		dirQueue.push({ name: opts.path, path: opts.path });
-		readNextDir(opts.path, root, cb);
-
-	},
-
-	_readObj = function(cb) {
-		var dir = opts.data;
-		opts.level = ~~opts.level || DEFAULT_LEVEL;
-		opts.indentation = ~~opts.indentation || DEFAULT_INDENTATION;
-		cb(dir);
-	},
-
-	_getKeys = function(dir) {
-		var keys = [];
-		for (var k in dir) {
-			if (dir.hasOwnProperty(k)) {
-				keys.push(k);
-			}
-		}
-		return keys;
-	},
-
-	_getKeysLength = function(dir) {
-		var cnt = 0;
-		for (var k in dir) {
-			if (dir.hasOwnProperty(k)) {
-				cnt++;
-			}
-		}
-		return cnt;
-	},
-	
-	_output = function(dir) {
-		console.log('dir', dir);
-		var str = '',
-			roots = [],
-			o = opts.out || 'tree_cli_output.txt';
-			draw = function(parent, prefix) {
-				var lk = _getLastKey(parent),
-					tb = '', tl = '',
-					line,
-					lineA = '├',
-					lineB = '└',
-					pref = prefix;
-				for (var i = 0; i < opts.indentation; i++) {
-					tb += ' ';
-					tl += '─';
-				}
-				lineA = tb + lineA + tl + '';
-				lineB = tb + lineB + tl + '';
-				for (var k in parent) {
-					if (parent.hasOwnProperty(k)) {
-						if (lk === k) {
-							line = lineB;
-						} else {
-							line = lineA;
-						}
-						str += pref + line + k +
-							// if parent[k] has childs, append dirSuffix to it's name.
-							(parent[k] !== '' ? dirSuffix : '') +
-							os.EOL;
-						if (typeof parent[k] === 'object' && lk === k) {
-							draw(parent[k], pref + new Array(opts.indentation + 1).join(' ') + '  ');
-						} else if (typeof parent[k] === 'object') {
-							draw(parent[k], pref + new Array(opts.indentation + 1).join(' ') + '│');
-						}
-					}
-				}
-			};
-		for (var k in dir) {
-			if (dir.hasOwnProperty(k)) {
-				roots.push(k);
-			}
-		}
-		for (var i = 0, l = roots.length; i < l; i++) {
-			str += new Array(opts.indentation + 1).join('─') + roots[i] + os.EOL;
-			draw(dir[roots[i]], '');
-		}
-		if (opts.isVerbose) {
-			console.log('tree-cli output_tree:\n' + str);
-		}
-		fs.writeFile(o, str, function(err) {
-			if (err) throw err;
-			console.log('dir tree has been saved to ' + o);
+			return appendChildNodes(_tree.root);
+		}).then(function() {
+			_debug('- genTree done.');
 		});
+
+	},
+
+	_stringifyTreeNode =  function(node, last) {
+
+		var children = node.children, lastChild,
+			str = '';
+		for (i = 0; i < node.level - 1; i++) {
+			str += _marks.pre_blank;
+		}
+		if (last) {
+			str += _marks.last_file;
+		} else {
+			str += _marks.pre_file;
+		}
+		if (node.type !== 'file') {
+			str += _marks['pre_' + node.type];
+		}
+		str += ' ' +
+			(_flags.fullpath ? node.path : node.name) +
+			_marks.eol;
+		if (node.type !== 'directory' || !children) {
+			return str;
+		}
+		for (var i = 0, l = children.length; i < l; i++) {
+			(i === l - 1) && (lastChild = true);
+			str += _stringifyTreeNode(children[i], lastChild);
+		}
+		return str;
+
+	},
+
+	stringifyTree = function(tree) {
+
+		var root = tree.root,
+			str = root.path + _marks.eol,
+			children = root.children,
+			last,
+			all = _stats.all;
+
+		for (var i = 0, l = children.length; i < l; i++) {
+			(i === l - 1) && (last = true);
+			str += _stringifyTreeNode(children[i], last);
+		}
+		return str;
+
+	},
+
+	make = function(flags) {
+
+		init(flags)
+			.then(function() {
+				var rootPath = path.resolve(_root, _flags.base);
+				return genTree(rootPath);
+			})
+			.then(function() {
+				_debug('generated tree:', JSON.stringify(_tree, null, 2));
+				var str = stringifyTree(_tree) + _marks.eol;
+				if (!_flags.noreport) {
+					for (var i = 0, l = _types.length; i < l; i++) {
+						if (_stats[_types[i]] && _stats[_types[i]].length) {
+							str += _types[i] + ': ' + _stats[_types[i]].length + ' ';
+						}
+					}
+					_log('result:\n', str);
+				}
+				return fs.writeFileAsync(_flags.o, str)
+					.then(function() {
+						_log('Finish writing to file:',
+							path.resolve(_root, _flags.o)
+						);
+					})
+					.catch(function(err) {
+						_error(err);
+						process.exit(-1);
+					});
+			})
+			.then(function() {
+				_spinnerOff();
+			});
+
 	};
 
 module.exports = {
 
-	run: _run
+	make: make
 
 };
