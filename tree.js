@@ -289,13 +289,9 @@ var Promise = require('bluebird'),
 		_debug('- genTree started...');
 		
 		// rootPath must be a direcotry.
-		return isDirectory(rootPath).then(function(yes) {
-			if (!yes) {
-				console.error('Root path must be a direcotry:', rootPath);
-				process.exit(-1);
-			}
+		return getFileType(rootPath).then(function(type) {
 			_tree.root = {
-				type: 'directory',
+				type: type,
 				level: 0,
 				name: path.basename(rootPath),
 				path: rootPath
