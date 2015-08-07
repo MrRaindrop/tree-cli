@@ -1,6 +1,6 @@
 {
   "name": "tree-cli",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "List contents of directories in tree-like format.",
   "author": {
     "name": "mr.raindrop",
@@ -20,6 +20,5 @@
     "cli-spinner": "^0.2.1",
     "meow": "^3.3.0",
     "object-assign": "^3.0.0",
-    "prompt": "*"
   }
 }
