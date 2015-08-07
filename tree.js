@@ -32,6 +32,11 @@ var Promise = require('bluebird'),
 		// --fullpath
 		// prints the full path prefix for each file.
 		fullpath: false,
+		// --link
+		// follows symbolic links if they point to directories, as if
+		// they were directories. Symbolic links that will result in
+		// recursion are avoided when detected.
+		link: false,
 		// --noreport
 		// omits printing of the file and directory report at the end of
 		// the tree listing and omits printing the tree on console.
@@ -215,13 +220,33 @@ var Promise = require('bluebird'),
 			_error('Path must exists:', parent);
 			process.exit(-1);
 		}
-		if (parent.type !== 'directory') {
-			_error('Must be a directory:', parent);
+
+		// neither a direcotry nor a symboliclink.
+		if (parent.type !== 'directory' &&
+			parent.type !== 'symboliclink'
+		) {
+			_error('Must be a directory or a symbolic link:',
+				parent.type, parent.name, parent.path
+			);
 			process.exit(-1);
 		}
-		parent.children = [];
+
+		// a symboliclink without --link flag open.
+		if (parent.type !== 'directory' &&
+			parent.type === 'symboliclink' &&
+			!_flags.link
+		) {
+			_error('Must be a directory or open the \'--link\' flag if' +
+				'it\'s a symbolic link:',
+				parent.name, parent.path
+			);
+			process.exit(-1);
+		}
+		
+		// parent.children = [];
 		return fs.readdirAsync(parent.path)
 			.then(function(files) {
+				parent.children = [];
 				return Promise.resolve(files)
 					.each(function(file) {
 						var filePath = path.resolve(parent.path, file),
@@ -244,13 +269,18 @@ var Promise = require('bluebird'),
 							if (type === 'directory') {
 								return appendChildNodes(child);
 							}
-						})
+						});
 					});
 			})
 			.catch(function(err) {
-				_error(err);
-				process.exit(-1);
-			});;
+				if (err.code === 'ENOTDIR') {
+					// a symboliclink reference to a file instead of a directory.
+					return;
+				} else {
+					_error(err);
+					process.exit(-1);
+				}
+			});
 		
 	},
 
@@ -281,6 +311,9 @@ var Promise = require('bluebird'),
 
 		var children = node.children, lastChild,
 			str = '';
+		if (node.type === 'symboliclink' && !_flags.link) {
+			return '';
+		}
 		for (i = 0; i < node.level - 1; i++) {
 			str += _marks.pre_blank;
 		}
@@ -295,7 +328,7 @@ var Promise = require('bluebird'),
 		str += ' ' +
 			(_flags.fullpath ? node.path : node.name) +
 			_marks.eol;
-		if (node.type !== 'directory' || !children) {
+		if (!children) {
 			return str;
 		}
 		for (var i = 0, l = children.length; i < l; i++) {
