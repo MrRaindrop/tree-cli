@@ -5,6 +5,7 @@ var meow = require('meow');
 var tree = require('../tree');
 
 var cli = meow({
+    pkg: '../package.json',
     help: [
         'tree - list contents of directories in tree-like format',
         '',
