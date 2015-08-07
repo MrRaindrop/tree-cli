@@ -1,7 +1,7 @@
 {
   "name": "tree-cli",
-  "version": "0.3.0",
-  "description": "a js tool to list files and directories in local file system running on node.",
+  "version": "0.3.1",
+  "description": "List contents of directories in tree-like format.",
   "author": {
     "name": "mr.raindrop",
     "email": "tekkahs@gmail.com",
