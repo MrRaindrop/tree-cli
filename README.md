@@ -37,19 +37,25 @@ tree -l 2, -o out.txt -d
 cmd:
 
 ```
-tree -l 2 -o out.txt
+tree -L 2 -o out.txt
 ```
 result:
 
 ```
-/Users/rdp/node_playground/tree-cli
+/Applications/XAMPP/htdocs/node_playground/tree-cli
 |-- README.md
 |-- bin
+|  `-- tree
 |-- node_modules
+|  |-- bluebird
+|  |-- chalk
+|  |-- cli-spinner
+|  |-- meow
+|  `-- object-assign
 |-- package.json
 `-- tree.js
 
-directory: 2 file: 3 
+directory: 7 file: 4
 ```
 
 ## Options
