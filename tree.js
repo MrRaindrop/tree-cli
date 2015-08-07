@@ -90,10 +90,10 @@ var Promise = require('bluebird'),
 				'|' + new Array(_flags.indent + 1).join(' '),
 			pre_file: _flags.i ?
 				'' :
-				'|' + new Array(_flags.indent + 1).join('-'),
+				'|' + new Array(_flags.indent + 1).join('-') + ' ',
 			last_file: _flags.i ?
 				'' :
-				'`' + new Array(_flags.indent + 1).join('-'),
+				'`' + new Array(_flags.indent + 1).join('-') + ' ',
 			pre_directory: _flags.f ? '/' : '',
 			pre_blockdevice: '',
 			pre_characterdevice: '',
@@ -331,8 +331,7 @@ var Promise = require('bluebird'),
 		if (node.type !== 'file') {
 			str += _marks['pre_' + node.type];
 		}
-		str += ' ' +
-			(_flags.fullpath ? node.path : node.name) +
+		str += (_flags.fullpath ? node.path : node.name) +
 			_marks.eol;
 		if (!children) {
 			return str;
