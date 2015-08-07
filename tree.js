@@ -84,7 +84,8 @@ var Promise = require('bluebird'),
 			vert: '|',
 			hori: '-',
 			eol: os.EOL,
-			pre_blank: _flags.i ?
+			pre_blank: ' ' + new Array(_flags.indent + 1).join(' '),
+			pre_vert: _flags.i ?
 				'' :
 				'|' + new Array(_flags.indent + 1).join(' '),
 			pre_file: _flags.i ?
@@ -236,7 +237,7 @@ var Promise = require('bluebird'),
 			parent.type === 'symboliclink' &&
 			!_flags.link
 		) {
-			_error('Must be a directory or open the \'--link\' flag if' +
+			_error('Must be a directory or open the \'--link\' flag if ' +
 				'it\'s a symbolic link:',
 				parent.name, parent.path
 			);
@@ -246,22 +247,24 @@ var Promise = require('bluebird'),
 		// parent.children = [];
 		return fs.readdirAsync(parent.path)
 			.then(function(files) {
+				files = files.filter(function(file) {
+					return _flags.a || !/^\./.test(file);
+				});
 				parent.children = [];
 				return Promise.resolve(files)
-					.each(function(file) {
-						var filePath = path.resolve(parent.path, file),
-							ignoreReg = /^\./;
-						if (!_flags.a && ignoreReg.test(file)) {
-							return;
-						}
+					.each(function(file, index) {
+						console.log(index);
+						var filePath = path.resolve(parent.path, file);
 						return getFileType(filePath).then(function(type) {
 							_debug(type, filePath);
 							var child = {
 								type: type,
 								level: parent.level + 1,
 								name: file,
-								path: filePath
+								path: filePath,
+								lasts: parent.lasts || []
 							};
+							(index === files.length - 1) && (child.lasts[parent.level] = true)
 							parent.children.push(child);
 							// for statistics.
 							_stats.all.push(child);
@@ -311,7 +314,7 @@ var Promise = require('bluebird'),
 			return '';
 		}
 		for (i = 0; i < node.level - 1; i++) {
-			str += _marks.pre_blank;
+			str += (node.lasts[i] ? _marks.pre_blank : _marks.pre_vert);
 		}
 		if (last) {
 			str += _marks.last_file;
