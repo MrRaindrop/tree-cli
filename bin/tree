@@ -61,7 +61,7 @@ var cli = meow({
         '',
         '$ tree',
         '',
-        '$ tree -l 2, -o out.txt -d --noreport'
+        '$ tree -l 2, -o out.txt --ignore [node_modules, test] -d --noreport'
     ]
 });
 
