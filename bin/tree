@@ -50,7 +50,7 @@ var cli = meow({
         '-i',
         '  makes tree not print the indentation lines, useful',
         '  when used in conjunction with the -f option.',
-        '-L',
+        '-l',
         '  max display depth of the directory tree.',
         '-o',
         '  send output to filename.',
