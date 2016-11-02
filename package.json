@@ -26,6 +26,7 @@
     "bluebird": "^2.9.34",
     "chalk": "^1.1.0",
     "cli-spinner": "^0.2.1",
+    "lodash.includes": "^4.3.0",
     "meow": "^3.3.0",
     "object-assign": "^3.0.0"
   }

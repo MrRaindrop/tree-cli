@@ -5,6 +5,7 @@ var _DEBUG = false;
 var Promise = require('bluebird'),
 	assign = require('object-assign'),
 	chalk = require('chalk'),
+	_includes = require('lodash.includes'),
 	Spinner = require('cli-spinner').Spinner,
 
 	fs = Promise.promisifyAll(require('fs')),
@@ -28,6 +29,9 @@ var Promise = require('bluebird'),
 		debug: _DEBUG,
 		base: '.',
 		indent: DEFAULT_INDENT,
+		// --ignore
+		// ignores specified directory/files
+		ignore: [],
 		// --fullpath
 		// prints the full path prefix for each file.
 		fullpath: false,
@@ -242,7 +246,7 @@ var Promise = require('bluebird'),
 			);
 			process.exit(-1);
 		}
-		
+
 		// parent.children = [];
 		return fs.readdirAsync(parent.path)
 			.then(function(files) {
@@ -282,13 +286,13 @@ var Promise = require('bluebird'),
 					process.exit(-1);
 				}
 			});
-		
+
 	},
 
 	genTree = function(rootPath) {
 
 		_debug('- genTree started...');
-		
+
 		// rootPath must be a direcotry.
 		return getFileType(rootPath).then(function(type) {
 			_tree.root = {
@@ -316,6 +320,9 @@ var Promise = require('bluebird'),
 			// 	}
 			// 	return al;
 			// };
+		if (_includes(_flags.ignore, node.name)) {
+			return '';
+		}
 		if (node.type === 'symboliclink' && !_flags.link) {
 			return '';
 		}
