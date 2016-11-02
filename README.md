@@ -37,7 +37,7 @@ tree -l 2, -o out.txt -d
 cmd:
 
 ```
-tree -L 2 -o out.txt
+tree -l 2 -o out.txt
 ```
 result:
 
