@@ -31,6 +31,8 @@ var cli = meow({
         '  outputs the version of tree-cli.',
         '--debug',
         '  show debug info.',
+        '--ignore',
+        '  ignores directory or file you specify.',
         '--fullpath',
         '  prints the full path prefix for each file.',
         '--noreport',
@@ -59,7 +61,7 @@ var cli = meow({
         '',
         '$ tree',
         '',
-        '$ tree -l 2, -o out.txt -d --noreport'
+        '$ tree -l 2, -o out.txt --ignore [node_modules, test] -d --noreport'
     ]
 });
 
