@@ -14,7 +14,7 @@ npm install -g tree-cli
 
 ## usage
 
-use the command ``tree``
+use the command `tree` or `treee` (to avoid confliction with system command)
 
 ``
 tree
@@ -29,7 +29,7 @@ tree --help
 #### use options to customize output
 
 ```
-tree -l 2, -o out.txt -d
+tree -l 2 -o out.txt -d
 ```
 
 ## output example

@@ -381,11 +381,11 @@ var Promise = require('bluebird'),
               str += _types[i] + ': ' + _stats[_types[i]].length + ' ';
             }
           }
-          _log(str);
+          console.log(str);
         }
         return fs.writeFileAsync(_flags.o, str)
           .then(function () {
-            _log('Finish writing to file:',
+            console.log('Finish writing to file:',
               path.resolve(_root, _flags.o)
             );
           })
