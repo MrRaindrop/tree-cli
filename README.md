@@ -4,6 +4,33 @@ List contents of directories in tree-like format.
 
 Tree-cli is a recursive directory listing program that produces a depth indented listing of files. With no arguments, tree lists the files in the current directory. When directory arguments are given, tree lists all the files and/or directories found in the given directories each in turn. Upon completion of listing all files/directories found, tree returns the total number of files and/or directories listed.
 
+## example
+
+cmd:
+
+```
+tree -l 2 -o output.txt
+```
+
+result:
+
+```
+/Applications/XAMPP/htdocs/node_playground/tree-cli
+├── README.md
+├── bin
+|  └── tree
+├── node_modules
+|  ├── bluebird
+|  ├── chalk
+|  ├── cli-spinner
+|  ├── meow
+|  └── object-assign
+├── package.json
+└── tree.js
+
+directory: 7 file: 4
+```
+
 ## install
 
 ```
@@ -60,33 +87,6 @@ you should just use the `treee` command as `tree` has been already taken by wind
 
 ```
 treee -l 2 -o out.txt -d
-```
-
-## output example
-
-cmd:
-
-```
-tree -l 2 -o output.txt
-```
-
-result:
-
-```
-/Applications/XAMPP/htdocs/node_playground/tree-cli
-├── README.md
-├── bin
-|  └── tree
-├── node_modules
-|  ├── bluebird
-|  ├── chalk
-|  ├── cli-spinner
-|  ├── meow
-|  └── object-assign
-├── package.json
-└── tree.js
-
-directory: 7 file: 4
 ```
 
 ## Options
