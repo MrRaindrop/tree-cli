@@ -16,8 +16,10 @@ npm install -g tree-cli
 
 use the command `tree` or `treee` (to avoid confliction with system command)
 
+**NOTE: use `treee` instead of `tree` on windows system.**
+
 ``
-tree
+tree/treee
 ``
 
 #### use --help to list help info.
@@ -26,10 +28,40 @@ tree
 tree --help
 ``
 
-#### use options to customize output
+#### specify the level of path (how deep to scan).
+
+use `-l levelNumber` to specify the path level.
+
+```
+tree -l 2
+```
+
+#### output result to a file
+
+use `-o` or `--output`
+
+```
+tree -l 2 -o out.txt
+```
+
+#### show directory only
+
+use `-d` to show directories only.
 
 ```
 tree -l 2 -o out.txt -d
+```
+
+#### other arguments
+
+see [Options](#options).
+
+#### FOR WINDOWS USERS
+
+you should just use the `treee` command as `tree` has been already taken by windows system.
+
+```
+treee -l 2 -o out.txt -d
 ```
 
 ## output example
@@ -37,23 +69,24 @@ tree -l 2 -o out.txt -d
 cmd:
 
 ```
-tree -l 2 -o out.txt
+tree -l 2 -o output.txt
 ```
+
 result:
 
 ```
 /Applications/XAMPP/htdocs/node_playground/tree-cli
-|-- README.md
-|-- bin
-|  `-- tree
-|-- node_modules
-|  |-- bluebird
-|  |-- chalk
-|  |-- cli-spinner
-|  |-- meow
-|  `-- object-assign
-|-- package.json
-`-- tree.js
+├── README.md
+├── bin
+|  └── tree
+├── node_modules
+|  ├── bluebird
+|  ├── chalk
+|  ├── cli-spinner
+|  ├── meow
+|  └── object-assign
+├── package.json
+└── tree.js
 
 directory: 7 file: 4
 ```
