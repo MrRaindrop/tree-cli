@@ -265,6 +265,11 @@ var Promise = require('bluebird'),
                   path: filePath,
                   lasts: parent.lasts ? parent.lasts.slice() : []
                 };
+                // flag -d means directory only.
+                if (_flags.d && type !== 'directory') {
+                  return
+                }
+                // otherwise every type of file counts.
                 (index === files.length - 1) && (child.lasts[parent.level] = true);
                 parent.children.push(child);
                 // for statistics.
