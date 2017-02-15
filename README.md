@@ -36,7 +36,7 @@ tree -l 2
 
 #### output result to a file
 
-use `-o` or `--output`
+use `-o outputFilePath` to specify the output file.
 
 ```
 tree -l 2 -o out.txt
