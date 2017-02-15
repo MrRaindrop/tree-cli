@@ -15,10 +15,13 @@ var Promise = require('bluebird'),
 
   DEFAULT_LEVEL = 1,
   DEFAULT_INDENT = 2,
+  DEFAULT_OUT = null,
 
   _LOG_DEBUG = '[debug]',
   _LOG = chalk.bold.green('[log]'),
   _ERROR = chalk.bold.red('[error]'),
+
+  _output = chalk.bold.yellow,
 
   _root,
   _spinner = new Spinner(),
@@ -47,7 +50,7 @@ var Promise = require('bluebird'),
     // -l
     // max display depth of the directory tree.
     l: DEFAULT_LEVEL,
-    o: 'tree_out',
+    o: DEFAULT_OUT,
     // -f
     // append a '/' for directories, a '=' for socket files
     // and a '|' for FIFOs
@@ -85,7 +88,7 @@ var Promise = require('bluebird'),
   _genMarks = function () {
     _marks = {
       vert: '|',
-      hori: '-',
+      hori: /*'-'*/'─',
       eol: os.EOL,
       pre_blank: ' ' + new Array(_flags.indent + 1).join(' '),
       pre_vert: _flags.i ?
@@ -93,10 +96,10 @@ var Promise = require('bluebird'),
         '|' + new Array(_flags.indent + 1).join(' '),
       pre_file: _flags.i ?
         '' :
-        '|' + new Array(_flags.indent + 1).join('-') + ' ',
+        /*'|'*/'├' + new Array(_flags.indent + 1).join(/*'-'*/'─') + ' ',
       last_file: _flags.i ?
         '' :
-        '`' + new Array(_flags.indent + 1).join('-') + ' ',
+        /*'`'*/'└' + new Array(_flags.indent + 1).join(/*'-'*/'─') + ' ',
       pre_directory: _flags.f ? '/' : '',
       pre_blockdevice: '',
       pre_characterdevice: '',
@@ -381,12 +384,16 @@ var Promise = require('bluebird'),
               str += _types[i] + ': ' + _stats[_types[i]].length + ' ';
             }
           }
-          console.log(str);
+          console.log('\n' + _output(str) + '\n');
+        }
+        if (!_flags.o) {
+          return
         }
         return fs.writeFileAsync(_flags.o, str)
           .then(function () {
             console.log('Finish writing to file:',
-              path.resolve(_root, _flags.o)
+              path.resolve(_root, _flags.o),
+              '\n\n'
             );
           })
           .catch(function (err) {
