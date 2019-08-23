@@ -25,7 +25,7 @@ var cli = meow({
     '',
     'OPTIONS:',
     '',
-    '--help',
+    '--help, -h',
     '  outputs a verbose usage listing.',
     '--version',
     '  outputs the version of tree-cli.',
@@ -64,5 +64,9 @@ var cli = meow({
     '$ tree -l 2, -o out.txt --ignore [node_modules, test] -d --noreport'
   ]
 });
+
+if (cli.flags.h) {
+  cli.showHelp();
+}
 
 tree.make(cli.flags);
