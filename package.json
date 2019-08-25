@@ -1,6 +1,6 @@
 {
   "name": "tree-cli",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "description": "List contents of directories in tree-like format.",
   "author": {
     "name": "_danZ",
