@@ -69,4 +69,4 @@ if (cli.flags.h) {
   cli.showHelp();
 }
 
-genTree(cli.flags).;
+genTree(cli.flags);
