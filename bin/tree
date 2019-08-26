@@ -2,7 +2,7 @@
 
 process.title = 'tree';
 var meow = require('meow');
-var tree = require('../tree');
+var genTree = require('../tree');
 
 var cli = meow({
   pkg: '../package.json',
@@ -69,4 +69,5 @@ if (cli.flags.h) {
   cli.showHelp();
 }
 
-tree.make(cli.flags);
+console.log('gentree--->');
+genTree(cli.flags);
