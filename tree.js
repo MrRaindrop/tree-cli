@@ -373,7 +373,7 @@ var Promise = require('bluebird'),
 
   },
 
-  make = function (flags) {
+  run = function (flags) {
 
     init(flags)
       .then(function () {
@@ -412,8 +412,4 @@ var Promise = require('bluebird'),
 
   };
 
-module.exports = {
-
-  make: make
-
-};
+module.exports = run

@@ -1,12 +1,14 @@
 {
   "name": "tree-cli",
-  "version": "0.4.13",
+  "version": "0.5.0",
   "description": "List contents of directories in tree-like format.",
   "author": {
-    "name": "_danZ",
+    "name": "Mr.Raindrop",
     "email": "tekkahs@gmail.com",
     "url": "http://github.com/MrRaindrop"
   },
+  "main": "./tree.js",
+  "types": "./types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/MrRaindrop/tree-cli.git"
