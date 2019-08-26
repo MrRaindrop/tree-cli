@@ -375,7 +375,7 @@ var Promise = require('bluebird'),
 
   run = function (flags) {
 
-    init(flags)
+    return init(flags)
       .then(function () {
         var rootPath = path.resolve(_root, _flags.base);
         return genTree(rootPath);
@@ -408,8 +408,10 @@ var Promise = require('bluebird'),
       })
       .then(function () {
         _spinnerOff();
+      })
+      .then(function () {
+        return _tree;
       });
-
   };
 
-module.exports = run
+  module.exports = run;

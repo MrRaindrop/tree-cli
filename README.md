@@ -39,13 +39,26 @@ npm install -g tree-cli
 
 ## usage
 
-use the command `tree` or `treee` (to avoid confliction with system command)
+#### Use the command `tree` or `treee` (to avoid confliction with system command).
 
 **NOTE: use `treee` instead of `tree` on windows system.**
 
 ``
 tree/treee
 ``
+
+#### Use it as a node module to get the detailed tree data.
+
+```javascript
+require('tree-cli')({
+  base: '.',    // or any path you want to inspect.
+  noreport: true
+}).then(res => {
+  console.dir(res); // res is the data for the file tree.
+});
+```
+
+You can find the type declaration for the exporting function and the type declaration of its' params and result in the 'types/index.d.ts' file. If you are using VSCode, you'll find the type hint during your typing.
 
 #### use --help to list help info.
 
