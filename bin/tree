@@ -69,5 +69,4 @@ if (cli.flags.h) {
   cli.showHelp();
 }
 
-console.log('gentree--->');
-genTree(cli.flags);
+genTree(cli.flags).;
