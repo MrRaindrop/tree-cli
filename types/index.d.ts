@@ -41,7 +41,7 @@ interface ITreeNode {
   children: Array<ITreeNode>
 }
 
-declare function runTree (flags: IFlags): Promise<ITreeRoot>;
+declare function runTree (flags: Partial<IFlags>): Promise<ITreeRoot>;
 
 declare module "tree-cli" {
   export=runTree
