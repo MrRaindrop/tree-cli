@@ -1,6 +1,7 @@
 # tree-cli
 
 [![CircleCI](https://circleci.com/gh/MrRaindrop/tree-cli.svg?style=svg)](https://circleci.com/gh/MrRaindrop/tree-cli)
+[![npm version](https://badge.fury.io/js/tree-cli.svg)](https://badge.fury.io/js/tree-cli)
 ![downloads](https://img.shields.io/npm/dm/tree-cli?style=flat-square)
 
 List contents of directories in tree-like format.
