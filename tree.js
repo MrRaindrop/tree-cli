@@ -61,6 +61,8 @@ var Promise = require('bluebird'),
   _tree = {
   },
 
+  _report = '',
+
   _stats = {
     all: [],
     file: [],
@@ -452,19 +454,20 @@ var Promise = require('bluebird'),
       })
       .then(function () {
         _debug('generated tree:', JSON.stringify(_tree, null, 2));
-        var str = stringifyTree(_tree) + _marks.eol;
-        if (!_flags.noreport) {
-          for (var i = 0, l = _types.length; i < l; i++) {
-            if (_stats[_types[i]] && _stats[_types[i]].length) {
-              str += _types[i] + ': ' + _stats[_types[i]].length + ' ';
-            }
+        _report = stringifyTree(_tree) + _marks.eol;
+        for (var i = 0, l = _types.length; i < l; i++) {
+          if (_stats[_types[i]] && _stats[_types[i]].length) {
+            _report += _types[i] + ': ' + _stats[_types[i]].length + ' ';
           }
-          console.log('\n' + _output(str) + '\n');
+        }
+
+        if (!_flags.noreport) {
+          console.log('\n' + _output(_report) + '\n');
         }
         if (!_flags.o) {
           return
         }
-        return fs.writeFileAsync(_flags.o, str)
+        return fs.writeFileAsync(_flags.o, _report)
           .then(function () {
             console.log('Finish writing to file:',
               path.resolve(_root, _flags.o),
@@ -480,7 +483,10 @@ var Promise = require('bluebird'),
         _spinnerOff();
       })
       .then(function () {
-        return _tree;
+        return {
+          data: _tree,
+          report: _report
+        };
       });
   };
 
