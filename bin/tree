@@ -33,6 +33,8 @@ var cli = meow({
     '  show debug info.',
     '--ignore',
     '  ignores directory or file you specify.',
+    '--base',
+    '  specify a root directory. Relative path from cwd root and absolute path are both acceptable.',
     '--fullpath',
     '  prints the full path prefix for each file.',
     '--noreport',

@@ -1,0 +1,340 @@
+/Users/rdp/www/rdp/github/MrRaindrop/tree-cli
+├── CHANGELOG.md
+├── README.md
+├── bin
+|  └── tree
+├── jsconfig.json
+├── node_modules
+|  ├── @nodelib
+|  |  ├── fs.scandir
+|  |  ├── fs.stat
+|  |  └── fs.walk
+|  ├── ansi-regex
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── ansi-styles
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── array-find-index
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── async
+|  |  ├── CHANGELOG.md
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── dist
+|  |  ├── lib
+|  ├── bluebird
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── changelog.md
+|  |  ├── js
+|  ├── braces
+|  |  ├── CHANGELOG.md
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  |  ├── lib
+|  ├── builtin-modules
+|  |  ├── builtin-modules.json
+|  |  ├── index.js
+|  |  ├── license
+|  |  ├── readme.md
+|  |  └── static.js
+|  ├── camelcase
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── camelcase-keys
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── chalk
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── cli-spinner
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── example
+|  |  ├── img
+|  |  ├── index.js
+|  ├── currently-unhandled
+|  |  ├── browser.js
+|  |  ├── core.js
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── decamelize
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── error-ex
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── escape-string-regexp
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── fast-glob
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── out
+|  ├── fastq
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── bench.js
+|  |  ├── example.js
+|  |  ├── index.d.ts
+|  |  ├── queue.js
+|  |  └── test
+|  ├── fill-range
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── find-up
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── get-stdin
+|  |  ├── index.js
+|  |  └── readme.md
+|  ├── glob-parent
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── glob-to-regexp
+|  |  ├── README.md
+|  |  ├── index.js
+|  |  └── test.js
+|  ├── graceful-fs
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── fs.js
+|  |  ├── graceful-fs.js
+|  |  ├── legacy-streams.js
+|  |  └── polyfills.js
+|  ├── has-ansi
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── hosted-git-info
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── git-host-info.js
+|  |  ├── git-host.js
+|  |  ├── index.js
+|  ├── indent-string
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── is-arrayish
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── is-builtin-module
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── is-extglob
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── is-finite
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── is-glob
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── is-number
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── is-utf8
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── is-utf8.js
+|  ├── load-json-file
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── lodash.includes
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── loud-rejection
+|  |  ├── api.js
+|  |  ├── index.js
+|  |  ├── license
+|  |  ├── readme.md
+|  |  └── register.js
+|  ├── map-obj
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── meow
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── merge2
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── micromatch
+|  |  ├── CHANGELOG.md
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── minimist
+|  |  ├── LICENSE
+|  |  ├── example
+|  |  ├── index.js
+|  |  ├── readme.markdown
+|  |  └── test
+|  ├── node-glob
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  |  └── tests
+|  ├── normalize-package-data
+|  |  ├── AUTHORS
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── lib
+|  |  └── test
+|  ├── number-is-nan
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── object-assign
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── parse-json
+|  |  ├── index.js
+|  |  ├── license
+|  |  ├── readme.md
+|  |  └── vendor
+|  ├── path-exists
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── path-type
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── picomatch
+|  |  ├── CHANGELOG.md
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  |  ├── lib
+|  ├── pify
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── pinkie
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── pinkie-promise
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── read-pkg
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── read-pkg-up
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── redent
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── repeating
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── reusify
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── benchmarks
+|  |  ├── reusify.js
+|  |  └── test.js
+|  ├── run-parallel
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── semver
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── bin
+|  |  ├── range.bnf
+|  |  └── semver.js
+|  ├── signal-exit
+|  |  ├── CHANGELOG.md
+|  |  ├── LICENSE.txt
+|  |  ├── README.md
+|  |  ├── index.js
+|  |  └── signals.js
+|  ├── spdx-correct
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── spdx-expression-parse
+|  |  ├── AUTHORS
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  |  └── parser.js
+|  ├── spdx-license-ids
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  └── spdx-license-ids.json
+|  ├── strip-ansi
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── strip-bom
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── strip-indent
+|  |  ├── cli.js
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── supports-color
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  ├── to-regex-range
+|  |  ├── LICENSE
+|  |  ├── README.md
+|  |  ├── index.js
+|  ├── trim-newlines
+|  |  ├── index.js
+|  |  ├── license
+|  |  └── readme.md
+|  └── validate-npm-package-license
+|     ├── LICENSE
+|     ├── README.md
+|     ├── index.js
+├── package-lock.json
+├── test
+|  └── index.js
+├── test.js
+├── test.txt
+├── tree.js
+└── types
+   └── index.d.ts
+
+directory: 95 file: 313 

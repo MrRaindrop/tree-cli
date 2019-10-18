@@ -1,7 +1,12 @@
-const tree = require('tree-cli');
+var tree = require('../tree');
+var path = require('path');
+
 tree({
-  base: '.',
-  noreport: true
-}).then((res) => {
-  console.dir(res.root.children);
+  ignore: ['package.json'],
+  o: path.resolve(__dirname, 'o.data'),
+  l: 3,
+  base: path.resolve(__dirname, '../'),
+  noreport: false,
+}).then(() => {
+  console.log('success!');
 });
