@@ -56,7 +56,7 @@ require('tree-cli')({
 }).then(res => {
   // res.data is the data for the file tree.
   // res.report is the stringified scanning report.
-  console.dir(res.data, res.report);
+  console.log(res.data, res.report);
 });
 ```
 
