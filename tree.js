@@ -469,10 +469,12 @@ var Promise = require('bluebird'),
         }
         return fs.writeFileAsync(_flags.o, _report)
           .then(function () {
-            console.log('Finish writing to file:',
-              path.resolve(_root, _flags.o),
-              '\n\n'
-            );
+            if (!_flags.noreport) {
+              console.log('Finish writing to file:',
+                path.resolve(_root, _flags.o),
+                '\n\n'
+              );
+            }
           })
           .catch(function (err) {
             _error(err);
