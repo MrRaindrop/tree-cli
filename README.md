@@ -62,6 +62,17 @@ require('tree-cli')({
 
 You can find the type declaration for the exporting function and the type declaration of its' params and result in the 'types/index.d.ts' file. If you are using VSCode, you'll find the type hint during your typing.
 
+**Breaking change:** In version before 0.6.0, the resovled result is the tree structure of the scanned directory. But in latest **v0.6.0**, the resolved result is changed to a object contains both the file tree structure and the scanned report. The structure of result would be:
+
+```
+{
+  data: {
+    // ...The file node tree.
+  },
+  report: '...',  // The final report.
+}
+```
+
 #### use --help to list help info.
 
 ``
