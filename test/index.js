@@ -6,7 +6,7 @@ tree({
   o: path.resolve(__dirname, 'o.data'),
   l: 3,
   base: path.resolve(__dirname, '../'),
-  noreport: false,
-}).then(() => {
-  console.log('success!');
+  noreport: true,
+}).then((res) => {
+  console.log('success!', Object.keys(res));
 });

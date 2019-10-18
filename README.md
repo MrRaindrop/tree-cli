@@ -54,7 +54,9 @@ require('tree-cli')({
   base: '.',    // or any path you want to inspect.
   noreport: true
 }).then(res => {
-  console.dir(res); // res is the data for the file tree.
+  // res.data is the data for the file tree.
+  // res.report is the stringified scanning report.
+  console.dir(res.data, res.report);
 });
 ```
 
