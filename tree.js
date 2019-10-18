@@ -446,7 +446,7 @@ var Promise = require('bluebird'),
 
   },
 
-  run = function (flags) {
+  run = function (flags, withCli) {
     return init(flags)
       .then(function () {
         var rootPath = path.resolve(_root, _flags.base);
@@ -461,7 +461,7 @@ var Promise = require('bluebird'),
           }
         }
 
-        if (!_flags.noreport) {
+        if (!_flags.noreport && withCli) {
           console.log('\n' + _output(_report) + '\n');
         }
         if (!_flags.o) {
@@ -469,7 +469,7 @@ var Promise = require('bluebird'),
         }
         return fs.writeFileAsync(_flags.o, _report)
           .then(function () {
-            if (!_flags.noreport) {
+            if (!_flags.noreport && withCli) {
               console.log('Finish writing to file:',
                 path.resolve(_root, _flags.o),
                 '\n\n'

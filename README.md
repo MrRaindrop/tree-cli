@@ -1,5 +1,8 @@
 # tree-cli
 
+[![CircleCI](https://circleci.com/gh/MrRaindrop/tree-cli.svg?style=svg)](https://circleci.com/gh/MrRaindrop/tree-cli)
+![downloads](https://img.shields.io/npm/dm/tree-cli?style=flat-square)
+
 List contents of directories in tree-like format.
 
 Tree-cli is a recursive directory listing program that produces a depth indented listing of files. With no arguments, tree lists the files in the current directory. When directory arguments are given, tree lists all the files and/or directories found in the given directories each in turn. Upon completion of listing all files/directories found, tree returns the total number of files and/or directories listed.
@@ -131,3 +134,4 @@ treee -l 2 -o out.txt -d
 * -i: makes tree not print the indentation lines, useful when used in conjunction with the -f option.
 * -l: max display depth of the directory tree.
 * -o: send output to filename.
+
