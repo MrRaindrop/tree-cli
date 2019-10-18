@@ -9,6 +9,9 @@
   },
   "main": "./tree.js",
   "types": "./types/index.d.ts",
+  "scripts": {
+    "test": "node test/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/MrRaindrop/tree-cli.git"

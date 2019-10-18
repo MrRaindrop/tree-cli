@@ -111,6 +111,7 @@ treee -l 2 -o out.txt -d
 * --ignore: ignores directory or file you specify - accepts arrays as comma-delimited strings: `'node_modules/, .git/, .gitignore'`
 * --link: follows symbolic links if they point to directories, as if they were directories. Symbolic links that will result in recursion are avoided when detected.
 * --noreport: omits printing of the file and directory report at the end of the tree listing and omits printing the tree on console.
+* --base: specify a root directory. Relative path from cwd root and absolute path are both acceptable. This argument is optional.
 * -a: all files are printed. By default tree does not print hidden files (those beginning with a dot '.'). In no event does tree print the file system constructs '.' (current directory) and '..' (previous directory).
 * -d: list directories only.
 * -f: append a '/' for directories, a '=' for socket files and a '|' for FIFOs.

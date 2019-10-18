@@ -5,7 +5,6 @@ var _DEBUG = false;
 var Promise = require('bluebird'),
   assign = require('object-assign'),
   chalk = require('chalk'),
-  _includes = require('lodash.includes'),
   Spinner = require('cli-spinner').Spinner,
 
   fs = Promise.promisifyAll(require('fs')),
@@ -56,6 +55,8 @@ var Promise = require('bluebird'),
     // and a '|' for FIFOs
     f: false,
   },
+
+  _ignores = [],
 
   _tree = {
   },
@@ -135,6 +136,10 @@ var Promise = require('bluebird'),
       [_ERROR].concat(Array.prototype.slice.call(arguments)));
   },
 
+  _typof = function (val) {
+    return Object.prototype.toString.call(val).slice(8, -1).toLowerCase();
+  },
+
   exec = function (cmd) {
     return Promise.promisify(childProcess.exec)(cmd)
       .then(function (res) {
@@ -148,17 +153,19 @@ var Promise = require('bluebird'),
   },
 
   init = function (flags) {
-
     assign(_flags, flags);
     if (_flags.l < DEFAULT_LEVEL) {
       _flags.l = DEFAULT_LEVEL;
     }
     _debug('flags', _flags);
     _genMarks();
-
     _spinnerOn();
-    return getRoot();
 
+    // Fixed: https://github.com/MrRaindrop/tree-cli/issues/14.
+    _normalizeIgnoreFlag(flags.ignore);
+    console.log(_ignores);
+
+    return getRoot();
   },
 
   getRoot = function () {
@@ -312,7 +319,73 @@ var Promise = require('bluebird'),
     }).then(function () {
       _debug('- genTree done.');
     });
+  },
 
+  _normalizeIgnoreFlag = function (ignoreFlag) {
+    if (!ignoreFlag) {
+      return;
+    }
+    var flagType = _typof(ignoreFlag)
+    if (flagType === 'string') {
+      try {
+        var obj = JSON.parse(ignoreFlag);
+        var type = _typof(obj);
+        if (type === 'array') {
+          return _normalizeIgnoreFlag(obj);
+        }
+        _ignores.push(ignoreFlag);
+      } catch (err) {
+        var parts = ignoreFlag.split(/,\s*/);
+        if (parts.length > 1) {
+          _normalizeIgnoreFlag(parts);
+        }
+        else if (ignoreFlag) {
+          _ignores.push(ignoreFlag);
+        }
+      }
+    }
+    else if (flagType === 'array') {
+      for (var i = 0, l = ignoreFlag.length; i < l; i++) {
+        _normalizeIgnoreFlag(ignoreFlag[i]);
+      }
+    }
+  },
+
+  // test if parent includes sub
+  _pathInclude = function (parent, sub) {
+    var rel = path.relative(parent, sub);
+    return rel && !rel.indexOf('..') === 0 && !path.isAbsolute(rel);
+  },
+
+  _testIgnore = function (node, ignoreFlag) {
+    var type = _typof(ignoreFlag);
+    var relPath = path.relative(_root, node.path);
+    switch (type) {
+      case 'regexp':
+        return ignoreFlag.test(relPath);
+      case 'array': {
+        for (var i = 0, l = ignoreFlag.length; i < l; i++) {
+          if (_testIgnore(node, ignoreFlag[i])) {
+            return true;
+          }
+        }
+        return false;
+      }
+      default: {
+        if (ignoreFlag[0] === '/') {
+          return ignoreFlag.substr(1) === relPath;
+        }
+        else if (ignoreFlag.slice(-1) === '/') {
+          return ignoreFlag.slice(0, -1) === node.name && node.type === 'directory';
+          // return ignoreFlag.slice(0, -1) === ignoreFlag
+          //   || _pathInclude(path.resolve(_root, ignoreFlag), relPath)
+        }
+        else {
+          console.log('compare ==>', relPath, ignoreFlag, relPath === ignoreFlag);
+          return node.name === ignoreFlag;
+        }
+      }
+    }
   },
 
   _stringifyTreeNode =  function (node, last) {
@@ -327,7 +400,7 @@ var Promise = require('bluebird'),
       //  }
       //  return al;
       // };
-    if (_includes(_flags.ignore, node.name)) {
+    if (_testIgnore(node, _ignores)) {
       return '';
     }
     if (node.type === 'symboliclink' && !_flags.link) {
@@ -374,7 +447,6 @@ var Promise = require('bluebird'),
   },
 
   run = function (flags) {
-
     return init(flags)
       .then(function () {
         var rootPath = path.resolve(_root, _flags.base);
