@@ -163,7 +163,6 @@ var Promise = require('bluebird'),
 
     // Fixed: https://github.com/MrRaindrop/tree-cli/issues/14.
     _normalizeIgnoreFlag(flags.ignore);
-    console.log(_ignores);
 
     return getRoot();
   },
@@ -381,7 +380,6 @@ var Promise = require('bluebird'),
           //   || _pathInclude(path.resolve(_root, ignoreFlag), relPath)
         }
         else {
-          console.log('compare ==>', relPath, ignoreFlag, relPath === ignoreFlag);
           return node.name === ignoreFlag;
         }
       }

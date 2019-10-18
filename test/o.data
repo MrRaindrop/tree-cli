@@ -330,11 +330,10 @@
 |     ├── index.js
 ├── package-lock.json
 ├── test
-|  └── index.js
-├── test.js
-├── test.txt
+|  ├── index.js
+|  └── o.data
 ├── tree.js
 └── types
    └── index.d.ts
 
-directory: 95 file: 313 
+directory: 95 file: 312 
