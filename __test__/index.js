@@ -22,6 +22,7 @@ describe('use with require', function () {
         f: true,
         base: testBase,
         noreport: true,
+        directoryFirst: true,
       }).then((res) => {
         result = res;
         done();
