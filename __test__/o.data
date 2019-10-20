@@ -1,9 +1,10 @@
 /Users/rdp/www/rdp/github/MrRaindrop/tree-cli/__test__/__data__
 ├── a.ts
 ├── b.data
-└── node_modules
+└── node_modules/
    ├── a.txt
-   └── bfolder
-      ├── node_modules
+   └── bfolder/
 
-directory: 3 file: 4 
+directory: 2 file: 3
+
+ignored: directory (1), file (1)

@@ -16,9 +16,10 @@ describe('use with require', function () {
   beforeEach(function (done) {
     if (!result) {
       tree({
-        ignore: ['package.json'],
+        ignore: ['package.json', /node_modules\/bfolder\/node_modules/],
         o: path.resolve(__dirname, 'o.data'),
         l: 3,
+        f: true,
         base: testBase,
         noreport: true,
       }).then((res) => {

@@ -71,7 +71,8 @@ var Promise = require('bluebird'),
     characterdevice: [],
     symboliclink: [],
     fifo: [],
-    socket: []
+    socket: [],
+    ignore: {},
   },
 
   _types = [
@@ -278,11 +279,36 @@ var Promise = require('bluebird'),
                   return
                 }
                 // otherwise every type of file counts.
-                (index === files.length - 1) && (child.lasts[parent.level] = true);
+                var isLast = index === files.length - 1;
+                isLast && (child.lasts[child.level - 1] = true);
+                if (_testIgnore(child, _ignores)) {
+                  child.ignore = true;
+                  if (isLast) {
+                    var prevIndex = index - 1;
+                    while(prevIndex >= 0) {
+                      var prevNode = parent.children[prevIndex];
+                      if (prevNode.ignore) {
+                        prevIndex--;
+                      }
+                      else {
+                        prevNode.lasts[child.level - 1] = true;
+                        break;
+                      }
+                    }
+                  }
+                }
                 parent.children.push(child);
                 // for statistics.
-                _stats.all.push(child);
-                _stats[type].push(child);
+                if (!child.ignore) {
+                  _stats.all.push(child);
+                  _stats[type].push(child);
+                }
+                else {
+                  if (!_stats.ignore[type]) {
+                    _stats.ignore[type] = [];
+                  }
+                  _stats.ignore[type].push(child);
+                }
                 if (type === 'directory') {
                   return appendChildNodes(child);
                 }
@@ -350,6 +376,9 @@ var Promise = require('bluebird'),
         _normalizeIgnoreFlag(ignoreFlag[i]);
       }
     }
+    else if (flagType) {
+      _ignores.push(ignoreFlag);
+    }
   },
 
   // test if parent includes sub
@@ -400,7 +429,7 @@ var Promise = require('bluebird'),
       //  }
       //  return al;
       // };
-    if (_testIgnore(node, _ignores)) {
+    if (node.ignore) {
       return '';
     }
     if (node.type === 'symboliclink' && !_flags.link) {
@@ -414,20 +443,21 @@ var Promise = require('bluebird'),
     } else {
       str += _marks.pre_file;
     }
+    str += (_flags.fullpath ? node.path : node.name);
     if (node.type !== 'file') {
       str += _marks['pre_' + node.type];
     }
-    str += (_flags.fullpath ? node.path : node.name) +
-      _marks.eol;
+    str += _marks.eol;
     if (!children) {
       return str;
     }
     for (var i = 0, l = children.length; i < l; i++) {
-      (i === l - 1) && (lastChild = true);
-      str += _stringifyTreeNode(children[i], lastChild);
+      // (i === l - 1) && (lastChild = true);
+      var child = children[i];
+      (child.lasts[child.level - 1] === true) && (lastChild = true);
+      str += _stringifyTreeNode(child, lastChild);
     }
     return str;
-
   },
 
   stringifyTree = function (tree) {
@@ -455,11 +485,19 @@ var Promise = require('bluebird'),
       .then(function () {
         _debug('generated tree:', JSON.stringify(_tree, null, 2));
         _report = stringifyTree(_tree) + _marks.eol;
+        var ignoreReport = 'ignored: ';
         for (var i = 0, l = _types.length; i < l; i++) {
-          if (_stats[_types[i]] && _stats[_types[i]].length) {
-            _report += _types[i] + ': ' + _stats[_types[i]].length + ' ';
+          var type = _types[i];
+          if (_stats[type] && _stats[type].length) {
+            _report += type + ': ' + _stats[type].length + ' ';
+          }
+          var ignores = _stats.ignore[type];
+          if (ignores && ignores.length) {
+            ignoreReport += type + ' (' + ignores.length + '), ';
           }
         }
+        _report = _report.slice(0, -1) + '\n\n';
+        _report += ignoreReport.slice(0, -2) + '\n';
 
         if (!_flags.noreport && withCli) {
           console.log('\n' + _output(_report) + '\n');
