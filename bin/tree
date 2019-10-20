@@ -48,6 +48,8 @@ var cli = meow({
     '  (current directory) and \'..\' (previous directory).',
     '-d',
     '  list directories only.',
+    '--directoryFirst',
+    '  list directories first.',
     '-f',
     '  append a \'/\' for directories, a \'=\' for socket files',
     '  and a \'|\' for FIFOs',

@@ -28,6 +28,10 @@ namespace Tree {
     // append a '/' for directories, a '=' for socket files
     // and a '|' for FIFOs
     f: boolean;
+    // list directories only.
+    d: boolean;
+    // list directories first.
+    directoryFirst: boolean;
   }
 
   interface ITreeRoot {

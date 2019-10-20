@@ -54,6 +54,7 @@ var Promise = require('bluebird'),
     // append a '/' for directories, a '=' for socket files
     // and a '|' for FIFOs
     f: false,
+    directoryFirst: false,
   },
 
   _ignores = [],
@@ -221,6 +222,16 @@ var Promise = require('bluebird'),
 
   },
 
+  // calc priority when the flag directoryFirst is true.
+  _calcPriority = function (node) {
+    return node.type === 'directory' ? 1 : 0;
+  },
+
+  // compare priority when the flag directoryFirst is true.
+  _comparePriority = function (nodeA, nodeB) {
+    return _calcPriority(nodeB) - _calcPriority(nodeA);
+  },
+
   appendChildNodes = function (parent) {
 
     _debug('appendTreeNode:', parent);
@@ -278,8 +289,39 @@ var Promise = require('bluebird'),
                 if (_flags.d && type !== 'directory') {
                   return
                 }
+                if (_testIgnore(child, _ignores)) {
+                  child.ignore = true;
+                }
+                parent.children.push(child);
+                // for statistics.
+                if (!child.ignore) {
+                  _stats.all.push(child);
+                  _stats[type].push(child);
+                }
+                else {
+                  if (!_stats.ignore[type]) {
+                    _stats.ignore[type] = [];
+                  }
+                  _stats.ignore[type].push(child);
+                }
+              })
+              .catch(function (err) {
+                _debug(filePath, ' is invalid to access.');
+              })
+          });
+      })
+      .then(function () {
+        if (_flags.directoryFirst) {
+          parent.children.sort(_comparePriority);
+        }
+      })
+      .then(function () {
+        return Promise.resolve(parent.children)
+          .each(function (child, index) {
+            return Promise.resolve()
+              .then(function () {
                 // otherwise every type of file counts.
-                var isLast = index === files.length - 1;
+                var isLast = index === parent.children.length - 1;
                 isLast && (child.lasts[child.level - 1] = true);
                 if (_testIgnore(child, _ignores)) {
                   child.ignore = true;
@@ -297,25 +339,10 @@ var Promise = require('bluebird'),
                     }
                   }
                 }
-                parent.children.push(child);
-                // for statistics.
-                if (!child.ignore) {
-                  _stats.all.push(child);
-                  _stats[type].push(child);
-                }
-                else {
-                  if (!_stats.ignore[type]) {
-                    _stats.ignore[type] = [];
-                  }
-                  _stats.ignore[type].push(child);
-                }
-                if (type === 'directory') {
+                if (child.type === 'directory') {
                   return appendChildNodes(child);
                 }
-              })
-              .catch(function (err) {
-                _debug(filePath, ' is invalid to access.');
-              })
+              });
           });
       })
       .catch(function (err) {
@@ -327,7 +354,6 @@ var Promise = require('bluebird'),
           process.exit(-1);
         }
       });
-
   },
 
   genTree = function (rootPath) {
