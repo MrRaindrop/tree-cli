@@ -34,16 +34,16 @@ namespace Tree {
     directoryFirst: boolean;
   }
 
-  interface ITreeRoot {
+  export interface ITreeRoot {
     root: ITreeNode;
   }
 
-  interface IResult {
+  export interface IResult {
     data: ITreeRoot,
     report: string;
   }
 
-  interface ITreeNode {
+  export interface ITreeNode {
     type: 'directory' | 'file' | string;
     level: number;
     name: string;
