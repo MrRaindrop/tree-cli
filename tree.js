@@ -496,7 +496,9 @@ var Promise = require('bluebird'),
 
     for (var i = 0, l = children.length; i < l; i++) {
       (i === l - 1) && (last = true);
-      str += _stringifyTreeNode(children[i], last);
+      var child = children[i];
+      var isLast = child.lasts[child.level - 1] === true;
+      str += _stringifyTreeNode(child, isLast);
     }
     return str;
 
