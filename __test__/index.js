@@ -9,15 +9,16 @@ function typof (val) {
   return Object.prototype.toString.call(val).slice(8, -1).toLowerCase();
 }
 
-describe('use with require', function () {
+describe('use with require #1', function () {
 
   let result;
+  const outputPath = path.resolve(__dirname, 'report/o#1.data');
 
   beforeEach(function (done) {
     if (!result) {
       tree({
         ignore: ['package.json', /node_modules\/bfolder\/node_modules/],
-        o: path.resolve(__dirname, 'o.data'),
+        o: outputPath,
         l: 3,
         f: true,
         base: testBase,
@@ -47,7 +48,40 @@ describe('use with require', function () {
   });
 
   it('should generate report', function () {
-    const generatedReport = fs.readFileSync(path.resolve(__dirname, 'o.data'));
+    const generatedReport = fs.readFileSync(outputPath);
     expect(generatedReport.toString()).to.equal(result.report);
-  })
+  });
+});
+
+describe('use with require #2', function () {
+
+  let result;
+  const outputPath = path.resolve(__dirname, 'report/o#2.data');
+  
+  beforeEach(function (done) {
+    if (!result) {
+      tree({
+        ignore: ['package.json', /node_modules\/bfolder\/node_modules/, 'b.data', 't.txt'],
+        o: outputPath,
+        l: 3,
+        f: true,
+        base: testBase,
+        noreport: true,
+        directoryFirst: true,
+      }).then((res) => {
+        result = res;
+        done();
+      });
+    }
+    else {
+      done();
+    }
+  });
+
+  it('should output corret report with ignores', function () {
+    const generatedReport = fs.readFileSync(outputPath);
+    const report = result.report;
+    expect(generatedReport.toString()).to.equal(report);
+    expect(report).to.match(/└── a\.ts/)
+  });
 });
