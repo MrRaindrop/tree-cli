@@ -513,7 +513,7 @@ var Promise = require('bluebird'),
       .then(function () {
         _debug('generated tree:', JSON.stringify(_tree, null, 2));
         _report = stringifyTree(_tree) + _marks.eol;
-        var ignoreReport = 'ignored: ';
+        var totalIgnores = [];
         for (var i = 0, l = _types.length; i < l; i++) {
           var type = _types[i];
           if (_stats[type] && _stats[type].length) {
@@ -521,11 +521,16 @@ var Promise = require('bluebird'),
           }
           var ignores = _stats.ignore[type];
           if (ignores && ignores.length) {
-            ignoreReport += type + ' (' + ignores.length + '), ';
+            totalIgnores.push([ignores, type]);
           }
         }
+        var ignoreReport = totalIgnores.length > 0
+          ? totalIgnores.reduce((acc, [ignores, type]) => {
+              return acc + type + ' (' + ignores.length + '), ';
+            }, 'ignored: ')
+          : '';
         _report = _report.slice(0, -1) + '\n\n';
-        _report += ignoreReport.slice(0, -2) + '\n';
+        _report += ignoreReport ? ignoreReport.slice(0, -2) + '\n' : '';
 
         if (!_flags.noreport && withCli) {
           console.log('\n' + _output(_report) + '\n');
